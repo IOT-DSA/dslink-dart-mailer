@@ -67,12 +67,9 @@ class AddGmailAccountNode extends SimpleNode {
             "type": "string"
           },
           {
-            "name": "recipient",
-            "type": "string"
-          },
-          {
             "name": "recipients",
-            "type": "list"
+            "type": "list",
+            "default": []
           },
           {
             "name": "subject",
@@ -117,13 +114,7 @@ class SendGmailEmailNode extends SimpleNode {
 
   @override
   Object onInvoke(Map<String, dynamic> params) async {
-    var recipients = [];
-
-    if (params.containsKey("recipient")) {
-      recipients.add(params["recipient"]);
-    } else if (params.containsKey("recipients")) {
-      recipients.add(params["recipients"]);
-    }
+    var recipients = params["recipients"];
 
     var pn = link[new Path(path).parentPath];
     var options = new GmailSmtpOptions()
