@@ -15,7 +15,9 @@ main(List<String> args) async {
     profiles: {
       "deleteParent": (String path) => new DeleteActionNode.forParent(path, link.nodeProvider),
       "addGmailAccount": (String path) => new AddGmailAccountNode(path),
-      "sendEmailGmail": (String path) => new SendGmailEmailNode(path)
+      "sendEmailGmail": (String path) => new SendGmailEmailNode(path),
+      "addSMTPAccount": (String path) => new AddSMTPAccountNode(path),
+      "sendEmailSMTP": (String path) => new SendSMTPEmailNode(path)
     },
     defaultNodes: {
       "Add_Gmail_Account": {
@@ -37,6 +39,50 @@ main(List<String> args) async {
             "type": "string"
           }
         ]
+      },
+      "Add_SMTP_Account": {
+        r"$name": "Add SMTP Account",
+        r"$is": "addSMTPAccount",
+        r"$invokable": "write",
+        r"$result": "values",
+        r"$params": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "host",
+            "type": "string"
+          },
+          {
+            "name": "port",
+            "type": "number",
+            "default": 25
+          },
+          {
+            "name": "secured",
+            "type": "bool",
+            "default": false
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "type": "string"
+          },
+          {
+            "name": "requiresAuthentication",
+            "type": "bool",
+            "default": true
+          },
+          {
+            "name": "ignoreBadCertificate",
+            "type": "bool",
+            "default": false
+          }
+        ]
       }
     },
     autoInitialize: false
@@ -45,6 +91,82 @@ main(List<String> args) async {
   link.init();
 
   link.connect();
+}
+
+class AddSMTPAccountNode extends SimpleNode {
+  AddSMTPAccountNode(String path) : super(path);
+
+  @override
+  Object onInvoke(Map<String, dynamic> params) {
+    var name = params["name"];
+    var host = params["host"];
+    var port = params["port"];
+    var username = params["username"];
+    var password = params["password"];
+    var secured = params["secured"];
+    var requiresAuth = params["requiresAuthentication"];
+    var ignoreBadCertificate = params["ignoreBadCertificate"];
+
+    var map = {
+      r"$name": name,
+      r"$$smtp_host": host,
+      r"$$smtp_port": port,
+      r"$$smtp_username": username,
+      r"$$smtp_password": password,
+      r"$$smtp_secured": secured,
+      r"$$smtp_requires_auth": requiresAuth,
+      r"$$smtp_ignore_bad_cert": ignoreBadCertificate,
+      "Send_Email": {
+        r"$is": "sendEmailSMTP",
+        r"$name": "Send Email",
+        r"$invokable": "write",
+        r"$result": "values",
+        r"$params": [
+          {
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "name": "recipients",
+            "type": "list",
+            "default": []
+          },
+          {
+            "name": "subject",
+            "type": "string"
+          },
+          {
+            "name": "bodyType",
+            "type": "enum[Text,HTML]"
+          },
+          {
+            "name": "body",
+            "type": "string"
+          }
+        ],
+        r"$columns": [
+          {
+            "name": "success",
+            "type": "bool"
+          },
+          {
+            "name": "error",
+            "type": "string"
+          }
+        ]
+      },
+      "Delete_Account": {
+        r"$name": "Delete Account",
+        r"$invokable": "write",
+        r"$result": "values",
+        r"$is": "deleteParent"
+      }
+    };
+
+    link.provider.addNode("/${generateToken(length: 40)}", map);
+    link.save();
+    return {};
+  }
 }
 
 class AddGmailAccountNode extends SimpleNode {
@@ -106,6 +228,48 @@ class AddGmailAccountNode extends SimpleNode {
     link.provider.addNode("/${generateToken(length: 40)}", map);
     link.save();
     return {};
+  }
+}
+
+class SendSMTPEmailNode extends SimpleNode {
+  SendSMTPEmailNode(String path) : super(path);
+
+  @override
+  Object onInvoke(Map<String, dynamic> params) async {
+    var recipients = params["recipients"];
+
+    var pn = link[new Path(path).parentPath];
+    var options = new SmtpOptions()
+      ..hostName = pn.configs[r"$$smtp_host"]
+      ..port = pn.configs[r"$$smtp_port"]
+      ..requiresAuthentication = pn.configs[r"$$smtp_requires_auth"]
+      ..secured = pn.configs[r"$$smtp_secured"]
+      ..username = pn.configs[r"$$smtp_username"]
+      ..password = pn.configs[r"$$smtp_password"]
+      ..ignoreBadCertificate = pn.configs[r"$$smtp_ignore_bad_cert"];
+    var transport = new SmtpTransport(options);
+    var envelope = new Envelope();
+    if (params["subject"] != null) {
+      envelope.subject = params["subject"];
+    }
+    envelope.from = params["from"];
+    var bodyType = params["bodyType"];
+    if (bodyType == "HTML") {
+      envelope.html = params["body"];
+    } else {
+      envelope.text = params["body"];
+    }
+    envelope.recipients.addAll(recipients);
+    return transport.send(envelope).then((x) {
+      return {
+        "success": true
+      };
+    }).catchError((e) {
+      return {
+        "success": false,
+        "error": e.toString()
+      };
+    });
   }
 }
 
