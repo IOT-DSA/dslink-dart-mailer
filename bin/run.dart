@@ -238,6 +238,10 @@ class SendSMTPEmailNode extends SimpleNode {
   Object onInvoke(Map<String, dynamic> params) async {
     var recipients = params["recipients"];
 
+    if (recipients == null) {
+      recipients = [];
+    }
+
     var pn = link[new Path(path).parentPath];
     var options = new SmtpOptions()
       ..hostName = pn.configs[r"$$smtp_host"]
@@ -279,6 +283,10 @@ class SendGmailEmailNode extends SimpleNode {
   @override
   Object onInvoke(Map<String, dynamic> params) async {
     var recipients = params["recipients"];
+
+    if (recipients == null) {
+      recipients = [];
+    }
 
     var pn = link[new Path(path).parentPath];
     var options = new GmailSmtpOptions()
