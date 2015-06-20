@@ -36,7 +36,8 @@ main(List<String> args) async {
           },
           {
             "name": "password",
-            "type": "string"
+            "type": "string",
+            "editor": "password"
           }
         ]
       },
@@ -70,7 +71,8 @@ main(List<String> args) async {
           },
           {
             "name": "password",
-            "type": "string"
+            "type": "string",
+            "editor": "password"
           },
           {
             "name": "requiresAuthentication",
@@ -128,8 +130,8 @@ class AddSMTPAccountNode extends SimpleNode {
           },
           {
             "name": "recipients",
-            "type": "list",
-            "default": []
+            "type": "string",
+            "default": ""
           },
           {
             "name": "subject",
@@ -141,7 +143,8 @@ class AddSMTPAccountNode extends SimpleNode {
           },
           {
             "name": "body",
-            "type": "string"
+            "type": "string",
+            "editor": "textarea"
           }
         ],
         r"$columns": [
@@ -190,8 +193,8 @@ class AddGmailAccountNode extends SimpleNode {
           },
           {
             "name": "recipients",
-            "type": "list",
-            "default": []
+            "type": "string",
+            "default": ""
           },
           {
             "name": "subject",
@@ -203,7 +206,8 @@ class AddGmailAccountNode extends SimpleNode {
           },
           {
             "name": "body",
-            "type": "string"
+            "type": "string",
+            "editor": "textarea"
           }
         ],
         r"$columns": [
@@ -240,6 +244,8 @@ class SendSMTPEmailNode extends SimpleNode {
 
     if (recipients == null) {
       recipients = [];
+    } else if (recipients is String) {
+      recipients = recipients.split("\n");
     }
 
     var pn = link[new Path(path).parentPath];
@@ -286,6 +292,8 @@ class SendGmailEmailNode extends SimpleNode {
 
     if (recipients == null) {
       recipients = [];
+    } else if (recipients is String) {
+      recipients = recipients.split("\n");
     }
 
     var pn = link[new Path(path).parentPath];
