@@ -3,12 +3,21 @@ import "package:dslink/nodes.dart";
 
 import "package:mailer/mailer.dart";
 
+import "dart:async";
 import "dart:math";
 
 LinkProvider link;
 SimpleNodeProvider nodeProvider;
 
 main(List<String> args) async {
+  return runZoned(() {
+    return _main(args);
+  }, onError: (e, stack) {
+    print("ERROR: ${e}");
+  });
+}
+
+_main(List<String> args) async {
   link = new LinkProvider(
     args,
     "Mailer-",
