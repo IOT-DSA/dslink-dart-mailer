@@ -13,7 +13,7 @@ main(List<String> args) async {
     args,
     "Mailer-",
     profiles: {
-      "deleteParent": (String path) => new DeleteActionNode.forParent(path, link.nodeProvider),
+      "deleteParent": (String path) => new DeleteActionNode.forParent(path, link.provider),
       "addGmailAccount": (String path) => new AddGmailAccountNode(path),
       "sendEmailGmail": (String path) => new SendGmailEmailNode(path),
       "addSMTPAccount": (String path) => new AddSMTPAccountNode(path),
@@ -163,7 +163,7 @@ class AddSMTPAccountNode extends SimpleNode {
       }
     };
 
-    link.provider.addNode("/${generateToken(length: 40)}", map);
+    link.addNode("/${generateToken(length: 40)}", map);
     link.save();
     return {};
   }
@@ -225,7 +225,7 @@ class AddGmailAccountNode extends SimpleNode {
       }
     };
 
-    link.provider.addNode("/${generateToken(length: 40)}", map);
+    link.addNode("/${generateToken(length: 40)}", map);
     link.save();
     return {};
   }
