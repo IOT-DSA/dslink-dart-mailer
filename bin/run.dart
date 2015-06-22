@@ -613,9 +613,6 @@ class SmtpClient {
     if (new RegExp('AUTH(?:\\s+[^\\n]*\\s+|\\s+)XOAUTH', caseSensitive: false).hasMatch(message)) supportedAuthentications.add('XOAUTH');
     if (new RegExp('AUTH(?:\\s+[^\\n]*\\s+|\\s+)XOAUTH2', caseSensitive: false).hasMatch(message)) supportedAuthentications.add('XOAUTH2');
 
-    print(message);
-    print(supportedAuthentications);
-
     _authenticateUser();
   }
 
