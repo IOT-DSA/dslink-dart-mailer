@@ -278,9 +278,9 @@ class SendSMTPEmailNode extends SimpleNode {
     envelope.from = params["from"];
     var bodyType = params["bodyType"];
     if (bodyType == "HTML") {
-      envelope.html = params["body"];
+      envelope.html = "\r\n" + params["body"].replaceAll("\n", "\r\n");
     } else {
-      envelope.text = params["body"];
+      envelope.text = "\r\n" + params["body"].replaceAll("\n", "\r\n");
     }
     envelope.recipients.addAll(recipients);
     return transport.send(envelope).then((x) {
@@ -321,9 +321,9 @@ class SendGmailEmailNode extends SimpleNode {
     envelope.from = params["from"];
     var bodyType = params["bodyType"];
     if (bodyType == "HTML") {
-      envelope.html = params["body"].replaceAll("\n", "\r\n");
+      envelope.html = "\r\n" + params["body"].replaceAll("\n", "\r\n");
     } else {
-      envelope.text = params["body"].replaceAll("\n", "\r\n");
+      envelope.text = "\r\n" + params["body"].replaceAll("\n", "\r\n");
     }
     envelope.recipients.addAll(recipients);
     return transport.send(envelope).then((x) {
