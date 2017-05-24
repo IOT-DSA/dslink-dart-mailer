@@ -13,18 +13,18 @@ class GmailAccountNode extends SimpleNode {
   static const String _pass = r'$$gmail_password';
 
   static Map<String, dynamic> def(String name, String user, String pass) => {
-    r'$is': isType,
-    r'$name': name,
-    _user: user,
-    _pass: pass,
-    SendGmailEmail.pathName: SendGmailEmail.def(),
-    DeleteAccount.pathName: DeleteAccount.def()
-  };
+        r'$is': isType,
+        r'$name': name,
+        _user: user,
+        _pass: pass,
+        SendGmailEmail.pathName: SendGmailEmail.def(),
+        DeleteAccount.pathName: DeleteAccount.def()
+      };
 
   String _gmail_user;
   String _gmail_pass;
 
-  GmailAccountNode(String path): super(path);
+  GmailAccountNode(String path) : super(path);
 
   @override
   void onCreated() {
@@ -44,20 +44,20 @@ class AddGmailAccount extends SimpleNode {
   static const String _error = 'error';
 
   static Map<String, dynamic> def() => {
-    r'$name': 'Add Gmail Account',
-    r'$is': isType,
-    r'$invokable': 'write',
-    r'$result': 'values',
-    r'$params': [
-      {'name': _name, 'type': 'string'},
-      {'name': _user, 'type': 'string'},
-      {'name': _pass, 'type': 'string', 'editor': 'password'}
-    ],
-    r'$columns': [
-      {'name': _success, 'type': 'bool'},
-      {'name': _error, 'type': 'string'}
-    ],
-  };
+        r'$name': 'Add Gmail Account',
+        r'$is': isType,
+        r'$invokable': 'write',
+        r'$result': 'values',
+        r'$params': [
+          {'name': _name, 'type': 'string'},
+          {'name': _user, 'type': 'string'},
+          {'name': _pass, 'type': 'string', 'editor': 'password'}
+        ],
+        r'$columns': [
+          {'name': _success, 'type': 'bool'},
+          {'name': _error, 'type': 'string'}
+        ],
+      };
 
   final LinkProvider _link;
 
@@ -79,8 +79,8 @@ class AddGmailAccount extends SimpleNode {
 
     if (pass == null || pass.isEmpty) {
       return ret
-          ..[_success] = false
-          ..[_error] = 'Password must be supplied';
+        ..[_success] = false
+        ..[_error] = 'Password must be supplied';
     }
 
     String ndName;
@@ -114,26 +114,26 @@ class SendGmailEmail extends SimpleNode {
   static const String _error = 'error';
 
   static Map<String, dynamic> def() => {
-    r'$is': isType,
-    r'$name': 'Send Email',
-    r'$invokable': 'write',
-    r'$result': 'values',
-    r'$params': [
-      {'name': _from, 'type': 'string'},
-      {'name': _to, 'type': 'string', 'default': ''},
-      {'name': _subj, 'type': 'string'},
-      {'name': _type, 'type': 'enum[Text,HTML]'},
-      {'name': _body, 'type': 'string', 'editor': 'textarea'}
-    ],
-    r'$columns': [
-      {'name': _success, 'type': 'bool'},
-      {'name': _error, 'type': 'string'}
-    ]
-  };
+        r'$is': isType,
+        r'$name': 'Send Email',
+        r'$invokable': 'write',
+        r'$result': 'values',
+        r'$params': [
+          {'name': _from, 'type': 'string'},
+          {'name': _to, 'type': 'string', 'default': ''},
+          {'name': _subj, 'type': 'string'},
+          {'name': _type, 'type': 'enum[Text,HTML]'},
+          {'name': _body, 'type': 'string', 'editor': 'textarea'}
+        ],
+        r'$columns': [
+          {'name': _success, 'type': 'bool'},
+          {'name': _error, 'type': 'string'}
+        ]
+      };
 
   final LinkProvider _link;
 
-  SendGmailEmail(String path, this._link): super(path);
+  SendGmailEmail(String path, this._link) : super(path);
 
   @override
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
@@ -164,14 +164,14 @@ class SendGmailEmail extends SimpleNode {
     pass = (par as GmailAccountNode)._gmail_pass;
 
     var options = new GmailSmtpOptions()
-        ..username = user
-        ..password = pass;
+      ..username = user
+      ..password = pass;
 
     var transport = new SmtpTransport(options);
 
     var envelope = new Envelope()
-        ..subject = params[_subj] ?? ''
-        ..recipients.addAll(to);
+      ..subject = params[_subj] ?? ''
+      ..recipients.addAll(to);
 
     if (params[_type] == 'HTML') {
       envelope.html = params[_body];
@@ -181,9 +181,10 @@ class SendGmailEmail extends SimpleNode {
 
     try {
       await transport.send(envelope);
-    } catch(e) {
-      ret..[_success] = false
-          ..[_error] = 'Error: $e';
+    } catch (e) {
+      ret
+        ..[_success] = false
+        ..[_error] = 'Error: $e';
     }
 
     return ret;

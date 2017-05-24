@@ -19,18 +19,18 @@ class SMTPAccountNode extends SimpleNode {
   static const String _cert = r'$$smtp_ignore_bad_cert';
 
   static Map<String, dynamic> def(SMTPAccount act) => {
-    r'$is': isType,
-    r'$name': act.name,
-    _host: act.host,
-    _port: act.port,
-    _user: act.username,
-    _pass: act.password,
-    _secd: act.secured,
-    _auth: act.requireAuth,
-    _cert: act.ignoreBadCert,
-    SendSMTPEmailNode.pathName: SendSMTPEmailNode.def(),
-    DeleteAccount.pathName: DeleteAccount.def()
-  };
+        r'$is': isType,
+        r'$name': act.name,
+        _host: act.host,
+        _port: act.port,
+        _user: act.username,
+        _pass: act.password,
+        _secd: act.secured,
+        _auth: act.requireAuth,
+        _cert: act.ignoreBadCert,
+        SendSMTPEmailNode.pathName: SendSMTPEmailNode.def(),
+        DeleteAccount.pathName: DeleteAccount.def()
+      };
 
   SMTPAccount account;
 
@@ -40,7 +40,8 @@ class SMTPAccountNode extends SimpleNode {
   void onCreated() {
     var nd = children[SendSMTPEmailNode.pathName];
     if (nd == null) {
-      provider.addNode('$path/${SendSMTPEmailNode.pathName}', SendSMTPEmailNode.def());
+      provider.addNode(
+          '$path/${SendSMTPEmailNode.pathName}', SendSMTPEmailNode.def());
     }
     String host = getConfig(_host);
     int port = getConfig(_port);
@@ -50,8 +51,8 @@ class SMTPAccountNode extends SimpleNode {
     bool reqAuth = getConfig(_auth);
     bool badCert = getConfig(_cert);
 
-    account = new SMTPAccount(this.displayName, host, port, user, pass, secured,
-        reqAuth, badCert);
+    account = new SMTPAccount(
+        this.displayName, host, port, user, pass, secured, reqAuth, badCert);
   }
 }
 
@@ -71,29 +72,29 @@ class AddSMTPAccount extends SimpleNode {
   static const String _error = 'error';
 
   static Map<String, dynamic> def() => {
-    r'$is': isType,
-    r'$name': 'Add SMTP Account',
-    r'$invokable': 'write',
-    r'$result': 'values',
-    r'$params': [
-      {'name': _name, 'type': 'string'},
-      {'name': _host, 'type': 'string'},
-      {'name': _port, 'type': 'number', 'default': 25},
-      {'name': _secured, 'type': 'bool', 'default': false},
-      {'name': _username, 'type': 'string'},
-      {'name': _password, 'type': 'string', 'editor': 'password'},
-      {'name': _reqAuth, 'type': 'bool', 'default': true},
-      {'name': _badCert, 'type': 'bool', 'default': false}
-    ],
-    r'$columns': [
-      {'name': _success, 'type': 'bool'},
-      {'name': _error, 'type': 'string'}
-    ]
-  };
+        r'$is': isType,
+        r'$name': 'Add SMTP Account',
+        r'$invokable': 'write',
+        r'$result': 'values',
+        r'$params': [
+          {'name': _name, 'type': 'string'},
+          {'name': _host, 'type': 'string'},
+          {'name': _port, 'type': 'number', 'default': 25},
+          {'name': _secured, 'type': 'bool', 'default': false},
+          {'name': _username, 'type': 'string'},
+          {'name': _password, 'type': 'string', 'editor': 'password'},
+          {'name': _reqAuth, 'type': 'bool', 'default': true},
+          {'name': _badCert, 'type': 'bool', 'default': false}
+        ],
+        r'$columns': [
+          {'name': _success, 'type': 'bool'},
+          {'name': _error, 'type': 'string'}
+        ]
+      };
 
   final LinkProvider _link;
 
-  AddSMTPAccount(String path, this._link): super(path);
+  AddSMTPAccount(String path, this._link) : super(path);
 
   @override
   Map<String, dynamic> onInvoke(Map<String, dynamic> params) {
@@ -103,8 +104,8 @@ class AddSMTPAccount extends SimpleNode {
 
     if (host == null || host.isEmpty) {
       return ret
-          ..[_success] = false
-          ..[_error] = 'A hostname must be supplied';
+        ..[_success] = false
+        ..[_error] = 'A hostname must be supplied';
     }
 
     Uri tmp;
@@ -112,8 +113,8 @@ class AddSMTPAccount extends SimpleNode {
       tmp = Uri.parse(host);
     } catch (e) {
       return ret
-          ..[_success] = false
-          ..[_error] = 'Unable to parse hostname: $host';
+        ..[_success] = false
+        ..[_error] = 'Unable to parse hostname: $host';
     }
 
     var port = params[_port] as num;
@@ -124,8 +125,8 @@ class AddSMTPAccount extends SimpleNode {
 
     if (port <= 0 || port >= 65535) {
       return ret
-          ..[_success] = false
-          ..[_error] = 'Invalid port number';
+        ..[_success] = false
+        ..[_error] = 'Invalid port number';
     }
 
     var name = params[_name] as String;
@@ -135,8 +136,8 @@ class AddSMTPAccount extends SimpleNode {
     var auth = params[_reqAuth] as bool;
     var cert = params[_badCert] as bool;
 
-    var account = new SMTPAccount(name, host, port, user, pass, secure, auth,
-        cert);
+    var account =
+        new SMTPAccount(name, host, port, user, pass, secure, auth, cert);
 
     String ndName;
     int i = 0;
@@ -169,26 +170,26 @@ class SendSMTPEmailNode extends SimpleNode {
   static const String _error = 'error';
 
   static Map<String, dynamic> def() => {
-    r'$is': isType,
-    r'$name': 'Send Email',
-    r'$invokable': 'write',
-    r'$result': 'values',
-    r'$params': [
-      {'name': _from, 'type': 'string'},
-      {'name': _recip, 'type': 'string', 'default': ''},
-      {'name': _subj, 'type': 'string'},
-      {'name': _type, 'type': 'enum[Text,HTML]'},
-      {'name': _body, 'type': 'string', 'editor': 'textarea'}
-    ],
-    r'$columns': [
-      {'name': _success, 'type': 'bool'},
-      {'name': _error, 'type': 'string'}
-    ]
-  };
+        r'$is': isType,
+        r'$name': 'Send Email',
+        r'$invokable': 'write',
+        r'$result': 'values',
+        r'$params': [
+          {'name': _from, 'type': 'string'},
+          {'name': _recip, 'type': 'string', 'default': ''},
+          {'name': _subj, 'type': 'string'},
+          {'name': _type, 'type': 'enum[Text,HTML]'},
+          {'name': _body, 'type': 'string', 'editor': 'textarea'}
+        ],
+        r'$columns': [
+          {'name': _success, 'type': 'bool'},
+          {'name': _error, 'type': 'string'}
+        ]
+      };
 
   final LinkProvider _link;
 
-  SendSMTPEmailNode(String path, this._link): super(path);
+  SendSMTPEmailNode(String path, this._link) : super(path);
 
   @override
   Future<Map<String, dynamic>> onInvoke(Map<String, dynamic> params) async {
@@ -215,9 +216,9 @@ class SendSMTPEmailNode extends SimpleNode {
     var trans = new SmtpTransport(account.toOptions());
 
     var env = new Envelope()
-        ..subject = params[_subj] ?? ''
-        ..from = params[_from]
-        ..recipients.addAll(to);
+      ..subject = params[_subj] ?? ''
+      ..from = params[_from]
+      ..recipients.addAll(to);
 
     if (params[_type] == 'HTML') {
       env.html = params[_body];

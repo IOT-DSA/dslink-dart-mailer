@@ -14,11 +14,11 @@ class SMTPAccount {
       this.secured, this.requireAuth, this.ignoreBadCert);
 
   SmtpOptions toOptions() => new SmtpOptions()
-      ..hostName = host
-      ..port = port
-      ..requiresAuthentication = requireAuth
-      ..secured = secured
-      ..username = username
-      ..password = password
-      ..ignoreBadCertificate = ignoreBadCert;
+    ..hostName = host
+    ..port = port
+    ..requiresAuthentication = requireAuth
+    ..secured = secured
+    ..username = username
+    ..password = password
+    ..ignoreBadCertificate = ignoreBadCert;
 }
