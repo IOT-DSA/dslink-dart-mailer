@@ -3,4 +3,4 @@ description: Send Mail through DSA
 dependencies:
   dslink:
     git: https://github.com/IOT-DSA/sdk-dslink-dart.git
-  mailer: "^1.1.3"
+  mailer: "^1.1.4"
